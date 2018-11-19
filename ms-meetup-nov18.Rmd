@@ -1,0 +1,1277 @@
+---
+title: "Using R to help plan the <br> future of transport"
+subtitle: "Münster R Users Group"
+author: "Mark Padgham <br> Active Transport Futures"
+date: "Tuesday 20th November, 2018 "
+output:
+      xaringan::moon_reader:
+            yolo:
+                        img: img/fortune-beach.png
+                        times: 2
+            lib_dir: libs
+            css: xaringan-themer.css
+            nature:
+                  highlightStyle: github
+                  highlightLines: true
+                  countIncrementalSlides: false
+---
+```{r load, include = FALSE, eval = TRUE}
+library(xaringanthemer)
+source ("myxaringantheme.R")
+source ("script.R")
+promenade <- readRDS ("data/osm-promenade.Rds")
+ms48155 <- readRDS ("data/osm-ms-48155.Rds")
+net <- f <- readRDS ("data/dodgr-flows-ms.Rds")
+net$flow <- NULL
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)# suppress version num in subdir name
+
+knitr::opts_chunk$set(cache = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+class: left, middle, inverse
+
+
+.left-column[
+`r icon::fa_github(size = 2, animate = "spin")` atfutures
+
+`r icon::fa_github(size = 2, animate = "spin")` mpadge
+
+`r icon::fa_github(size = 2, animate = "spin")` ropensci
+]
+
+.right-column[
+`r icon::fa_twitter(size = 2, animate = "spin")` bikesRdata
+
+`r icon::fa_envelope(size = 1)` .small[mark.padgham@email.com]<br><br>
+
+`r icon::ii_ios_world_outline(size = 5)` atfutures.github.io
+]
+
+
+.box-bottom[
+slides at <br>
+[https://github.com/mpadge/ms-user-meetup-nov2018](https://github.com/mpadge/ms-user-meetup-nov2018)
+]
+
+
+---
+class: left, top, inverse
+
+### Primary Collaborators
+
+- Robin Lovelace (@robinlovelace)
+- Layik Hama (@layik)
+- Andreas Petutschnig (@karpfen)
+- Andrew Smith (@virgesmith)
+
+### Additional `r icon::fa_github(animate = "spin")` Contributions From ... 
+
+.left-column[
+- RichardEllison
+- tbuckl
+- skcott
+- hrbrmstr
+- maelle
+- mdsumner
+- mem48
+- jimshady
+- angela-li
+  ]
+
+.right-column[
+- graceli8
+- arfon
+- jimhester
+- tazinho
+- karthik
+- fzenoni
+- mhenderson
+- patperu
+- eyesofbambi
+  ]
+
+---
+class: left, top, inverse
+
+# Active Transport Futures
+
+
+
+---
+background-image: url(img/amsterdam-cars.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: left, top, inverse
+
+# Active Transport Futures
+
+---
+class: left, top, inverse
+background-image: url(img/ms-promenade.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+
+# Active Transport Futures
+
+
+---
+class: left, top, inverse
+background-image: url(img/kl-bike-path.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+
+# [Active Transport Futures](http://www.who.int/sustainable-development/cities/en/)
+
+---
+
+# Active Transport Futures
+
+For a given city:
+
+- Collate data on patterns of urban mobility
+- Collate data on transport networks <br> (road, pedestrian, public transport)
+- Analyse "flows" throughout the network(s)
+- Collate data on (spatial patterns of) air pollution
+- Analyse dynamic interactions between movement, air pollution, and health
+- Develop, compare, contrast scenarios for ameliorating negative effects while
+  enhancing positive effects
+- [Health Economic Assessment Tool (HEAT)](https://heatwalkingcycling.org/#homepage)
+
+---
+
+# Active Transport Futures
+
+For a given city:
+
+- ~~Collate data on patterns of urban mobility~~
+- Collate data on transport networks <br> (road, pedestrian, public transport)
+- Analyse "flows" throughout the network(s)
+- ~~Collate data on (spatial patterns of) air pollution~~
+- Analyse dynamic interactions between movement, air pollution~~, and health~~
+- ~~Develop, compare, contrast scenarios for ameliorating negative effects while
+  enhancing positive effects~~
+- ~~[Health Economic Assessment Tool (HEAT)](https://heatwalkingcycling.org/#homepage)~~
+
+---
+
+# Active Transport Futures
+
+## Software: R Packages
+
+- `osmdata` (Open Street Map data)
+- `dodgr` (Distances On Directed GRaphs)
+- `stplanr` (Sustainable Transport PLANning in R)
+- `osmplotr` (OSM plotting routines)
+- `geoplumber` (Turbo-charged web server for geo data)
+- `bikedata` (Data from public hire bicycles)
+- `spatialcluster`
+- ... plus more
+
+- demo of `geoplumber` at [`http://35.233.61.182`](http://35.233.61.182)
+
+---
+
+# Active Transport Futures
+
+## Software: R Packages
+
+- `osmdata` (Open Street Map data)
+- `dodgr` (Distances On Directed GRaphs)
+- ~~`stplanr` (Sustainable Transport PLANning in R)~~
+- ~~`osmplotr` (OSM plotting routines)~~
+- ~~`geoplumber` (Turbo-charged web server for geo data)~~
+- ~~`bikedata` (Data from public hire bicycles)~~
+- ~~`spatialcluster`~~
+- ... plus more
+
+- demo of `geoplumber` at [`http://35.233.61.182`](http://35.233.61.182)
+
+---
+class: left, top
+
+# The osmdata package
+
+OSM = Open Street Map
+
+- CRAN
+- `r icon::fa_github(size = 1, animate = "spin")` `ropensci/osmdata`
+- Several mentions on
+  [OSM wiki](https://wiki.openstreetmap.org/wiki/OSM_Scientific_Tools)
+
+--
+
+## Why OSM data?
+
+---
+class: center, top, inverse
+.fontBIG[
+Popquiz: <br><br>What is the least mapped country on the planet?
+]
+
+---
+class: center, middle, inverse
+background-image: url(img/osm-north-korea.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+
+---
+class: center, middle, inverse
+background-image: url(img/anju-bing.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+
+---
+class: center, middle, inverse
+background-image: url(img/anju-google.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+
+---
+class: center, middle, inverse
+background-image: url(img/anju-google2.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+
+---
+class: center, middle, inverse
+background-image: url(img/anju-osm.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+
+---
+
+# The osmdata package
+
+- CRAN
+- `r icon::fa_github(size = 1, animate = "spin")` `ropensci/osmdata`
+- Several mentions on
+  [OSM wiki](https://wiki.openstreetmap.org/wiki/OSM_Scientific_Tools)
+
+## Why OSM data?
+
+--
+
+Because Open Street Map is the most comprehensive street atlas humanity has ever
+created.
+
+## How?
+
+`osmdata` uses the `overpass` server to retrieve data
+
+
+---
+
+# The osmdata package
+
+```{r opq1}
+library (osmdata)
+opq ("muenster de")
+```
+
+---
+
+# The osmdata package
+
+```{r opq2}
+library (osmdata)
+opq ("48155 de")
+```
+
+---
+
+# The osmdata package
+
+```{r add-osm-ft}
+library (osmdata)
+opq ("48155 de") %>%
+    add_osm_feature (key = "highway")
+```
+
+---
+
+# The osmdata package
+
+```{r osmdata-sf, eval = FALSE}
+library (osmdata)
+opq ("48155 de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_sf ()
+```
+```{r osmdata-sf-fakey, eval = TRUE, echo = FALSE, message = TRUE}
+print (ms48155)
+```
+
+
+---
+
+# The osmdata package
+
+```{r osmdata-sf2, eval = FALSE}
+library (osmdata)
+opq ("48155 de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_sf ()
+```
+
+- `opq` `r icon::fa_long_arrow_alt_right()` .bold[WHERE]
+- `opq` `r icon::fa_long_arrow_alt_right()` .bold[WHERE]
+- `add_osm_feature` `r icon::fa_long_arrow_alt_right()` .bold[WHAT]
+- `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[HOW]
+
+---
+
+# The osmdata package - Spatial Formats
+
+```{r osmdata-sf3, eval = FALSE}
+library (osmdata)
+opq ("48155 de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_sf ()
+```
+
+- `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[Simple Features]
+
+---
+
+# The osmdata package - Spatial Formats
+
+```{r osmdata-sp, eval = FALSE}
+library (osmdata)
+opq ("48155 de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_sp ()
+```
+
+- `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[Simple Features]
+- `osmdata_sp` `r icon::fa_long_arrow_alt_right()` .bold[R Spatial]
+
+---
+
+# The osmdata package - Spatial Formats
+
+```{r osmdata-sc, eval = FALSE}
+library (osmdata)
+opq ("48155 de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_sc ()
+```
+
+- `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[Simple Features]
+- `osmdata_sp` `r icon::fa_long_arrow_alt_right()` .bold[R Spatial]
+- `osmdata_sc` `r icon::fa_long_arrow_alt_right()` .bold[Silicate (Simplicial Complex)]
+
+---
+
+# The osmdata package - Spatial Formats
+
+```{r osmdata-xml, eval = FALSE}
+library (osmdata)
+opq ("48155 de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_xml (file = "ms48155.osm")
+```
+
+- `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[Simple Features]
+- `osmdata_sp` `r icon::fa_long_arrow_alt_right()` .bold[R Spatial]
+- `osmdata_sc` `r icon::fa_long_arrow_alt_right()` .bold[Silicate (Simplicial Complex)]
+- `osmdata_xml` `r icon::fa_long_arrow_alt_right()` .bold[XML / OSM]
+
+---
+
+# The osmdata package - Spatial Formats
+
+```{r osmdata-pbf, eval = FALSE}
+library (osmdata)
+opq ("48155 de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_pbf (file = "ms48155.pbf")
+```
+
+- `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[Simple Features]
+- `osmdata_sp` `r icon::fa_long_arrow_alt_right()` .bold[R Spatial]
+- `osmdata_sc` `r icon::fa_long_arrow_alt_right()` .bold[Silicate (Simplicial Complex)]
+- `osmdata_xml` `r icon::fa_long_arrow_alt_right()` .bold[XML / OSM]
+- `osmdata_pbf` `r icon::fa_long_arrow_alt_right()` .bold[PBF (Protocol Buffer Format)]
+
+---
+
+# The osmdata package
+
+```{r osmdata_sf2, eval = FALSE, message = TRUE}
+library (osmdata)
+ms48155 <- opq ("48155 de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_sf ()
+ms48155
+```
+```{r osmdata_sf2-fakey, echo = FALSE, message = TRUE}
+print (ms48155)
+```
+---
+
+# The osmdata package - Visualisation
+
+```{r mapview, eval = FALSE}
+library (osmdata)
+ms48155 <- opq ("48155 de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_sf ()
+library (mapview)
+mapview (ms48155$osm_lines)
+```
+
+---
+background-image: url(img/ms48155lines-mapview.png)
+background-size: contain 
+background-position: 50% 50%
+class: center, top, inverse
+
+
+---
+
+# The osmdata package - Visualisation
+
+How to visualise just the Promenade?
+
+```{r mapview2, eval = FALSE}
+library (osmdata)
+ms48155 <- opq ("48155 de") %>% #<<
+    add_osm_feature (key = "highway") %>%
+    osmdata_sf ()
+```
+---
+
+# The osmdata package - Visualisation
+
+How to visualise just the Promenade?
+
+```{r promenade-data1, eval = FALSE, message = TRUE}
+library (osmdata)
+promenade <- opq ("münster de") %>% #<<
+    add_osm_feature (key = "highway") %>%
+    osmdata_sf ()
+```
+
+---
+
+# The osmdata package - Visualisation
+
+How to visualise just the Promenade?
+
+```{r promenade-data2, eval = FALSE}
+library (osmdata)
+promenade <- opq ("münster de") %>%
+    add_osm_feature (key = "highway") %>%
+    add_osm_feature (key = "name", value = "promenade", #<<
+                     value_exact = FALSE) %>%           #<<
+    osmdata_sf ()
+```
+
+
+---
+
+# The osmdata package - Visualisation
+
+How to visualise just the Promenade?
+
+```{r promenade-data3, eval = FALSE}
+library (osmdata)
+promenade <- opq ("münster de") %>%
+    add_osm_feature (key = "highway") %>%
+    add_osm_feature (key = "name", value = "Promenade",
+                     value_exact = FALSE) %>%
+    osmdata_sf ()
+library (mapview)
+mapview (promenade$osm_lines) #<<
+```
+
+
+---
+background-image: url(img/mspromenade-mapview.png)
+background-size: contain 
+background-position: 50% 50%
+class: center, middle, inverse
+
+---
+
+class: middle, inverse, center
+
+.fonthuge[
+Digression:<br>Visualising OSM data
+]
+
+---
+
+# Visualising osmdata
+
+```{r prom-sf, message = TRUE}
+promenade
+```
+
+---
+
+# Visualising osmdata
+
+```{r prom-sf-print}
+library (sf)
+promenade$osm_lines
+```
+---
+
+
+# Visualising osmdata
+
+```{r, eval = FALSE}
+library (mapview)
+mapview (ms48155$osm_lines)
+```
+
+---
+background-image: url(img/ms48155lines-mapview.png)
+background-size: contain 
+background-position: 50% 50%
+class: center, middle, inverse
+
+---
+
+# Visualising osmdata
+
+```{r, eval = FALSE}
+library (mapview)
+mapview (ms48155$osm_lines) %>%
+    addFeatures (promenade$osm_lines)
+```
+... currently will not work (coz of `leaflet`; it's not `mapview`'s fault)
+
+--
+
+- but [`deck.gl`](https://deck.gl) will
+
+--
+
+- and it's available in R via the `mapdeck` package brought to us by 
+`r icon::fa_github(animate = "spin")` `symbolixAU`
+
+
+---
+
+# Visualising osmdata
+
+```{r promenade-data4, eval = FALSE}
+promenade <- opq ("münster de") %>%
+    add_osm_feature (key = "highway") %>%
+    add_osm_feature (key = "name", value = "Promenade",
+                     value_exact = FALSE) %>%
+    osmdata_sf ()
+```
+
+---
+
+# Visualising osmdata
+
+A little bit of pre-processing #1: Because `mapdeck` is highly experimental and
+currently needs to know where to centre the map.
+
+```{r mapdeck-pre}
+location <- ms48155$osm_lines %>%
+    sf::st_coordinates () %>%
+    apply (2, mean) %>%
+    as.numeric () %>%
+    magrittr::extract (1:2)
+location
+```
+
+---
+
+# Visualising osmdata
+
+A little bit of pre-processing #2: Because `mapdeck` needs a personal mapbox
+token which can be set with `set_token()`, and automatically used to generated
+all maps
+
+
+```{r mapdeck-token, eval = FALSE}
+library (mapdeck)
+set_token (<my_mapbox_token>)
+```
+
+
+---
+
+# Visualising osmdata
+
+```{r mapdeck3, eval = FALSE, echo = TRUE}
+library (mapdeck)
+mapdeck (style = 'mapbox://styles/mapbox/dark-v9',
+         location = location,
+         zoom = 12) %>%
+    add_path (data = ms48155$osm_lines,
+              layer_id = "ms",
+              stroke_width = 1,
+              stroke_colour = "#4444dd",
+              stroke_opacity = 80) %>%
+    add_path (data = promenade$osm_lines,
+              layer_id = "promenade",
+              stroke_width = 5,
+              stroke_colour = "#33cc33",
+              stroke_opacity = 100)
+```
+---
+class: center, middle, inverse
+background-image: url(img/ms-highway-promenade-mapview.png)
+background-size: contain 
+background-position: 50% 50%
+
+---
+
+# Visualising osmdata
+
+One further alternative for static plots is the [`osmplotr`
+package](https://github.com/ropensci/osmplotr)
+
+---
+class: top, center, inverse
+
+.fontBIG[
+Question:<br><br> Has anybody <br>used `osmdata`?
+]
+
+---
+class: top, center, inverse
+
+.fontBIG[
+Question:<br><br> What kind of default plot method might <br>be useful?
+]
+
+
+---
+
+# osmdata
+
+For more information, see [the website](https://github.com/ropensci/osmdata)
+
+---
+class: top, center, inverse
+
+.fonthuge[
+    **dodgr**<br>
+    ]
+.fontBIG[
+    Distances on Directed GRaphs
+]
+
+---
+class: top, center, inverse
+
+.fonthuge[
+    **dodgr**<br>
+    ]
+
+* CRAN <br><br>
+* `r icon::fa_github(size = 4, animate = "spin", colour = "#ffcc00")` [`ATFutures/dodgr`](https://github.com/atfutures/dodgr)
+
+---
+
+# dodgr
+
+Get all OSM highway data for Münster (not just 48155)
+
+```{r osm-ms, eval = FALSE}
+ms <- opq ("münster de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_sf ()
+ms
+```
+```{r load-ms, echo = FALSE, eval = FALSE, message = TRUE}
+ms <- readRDS ("data/osm-ms-highways.Rds")
+ms
+```
+```{r load-ms-fakey, echo = FALSE, message = TRUE}
+message ("Object of class 'osmdata' with:\n",
+"                 $bbox : 51.8401448,7.4737853,52.0600251,7.7743634\n",
+"        $overpass_call : The call submitted to the overpass API\n",
+"                 $meta : metadata including timestamp and version numbers\n",
+"           $osm_points : 'sf' Simple Features Collection with 157614 points\n",
+"            $osm_lines : 'sf' Simple Features Collection with 33545 linestrings\n",
+"         $osm_polygons : 'sf' Simple Features Collection with 510 polygons\n",
+"       $osm_multilines : 'sf' Simple Features Collection with 0 multilinestrings\n",
+"    $osm_multipolygons : 'sf' Simple Features Collection with 18 multipolygons")
+```
+
+
+---
+
+# dodgr
+
+Convert Münster OSM data to `dodgr` format
+
+```{r weight-streetnet-ms1, eval = FALSE, message = TRUE}
+ms <- osm_poly2line (ms) # osmdata function
+```
+
+---
+
+# dodgr
+
+Convert Münster OSM data to `dodgr` format
+
+```{r weight-streetnet-ms2, eval = FALSE, message = TRUE}
+ms <- osm_poly2line (ms) # osmdata function
+library (dodgr)
+net <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle") #<<
+```
+
+---
+
+# dodgr
+
+Convert Münster OSM data to `dodgr` format
+
+```{r weight-streetnet-ms3, eval = FALSE, message = TRUE}
+ms <- osm_poly2line (ms) # osmdata function
+library (dodgr)
+net <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle") #<<
+dim (net); head (net)
+```
+```{r weight-streetnet-ms-fakey, eval = TRUE, echo = FALSE, message = TRUE}
+library (dodgr)
+dim (net); head (net)
+```
+
+---
+
+# dodgr distances
+
+
+```{r ms-components, eval = TRUE, message = TRUE}
+dim (net)
+head (table (net$component), 10)
+```
+
+---
+
+# dodgr distances
+
+Calculate cycling distances between random points.
+
+```{r dodgr-vertices1-fakey, eval = FALSE}
+v <- dodgr_vertices (net) #<<
+dim (v); head (v)
+```
+```{r dodgr-vertices1, eval = TRUE, echo = FALSE}
+v <- dodgr_vertices (net)
+dim (v); head (v, n = 5)
+```
+
+- `id` is the unique OSM is of each vertex<br>("node" in OSM terminology)
+- most `dodgr` functions work either with<br>coordinates or `id` values
+
+
+---
+
+# dodgr distances
+
+Calculate cycling distances between random points.
+
+```{r dodgr-vertices2, eval = FALSE}
+v <- dodgr_vertices (net)
+dim (v); head (v)
+```
+```{r dodgr-vertices2-fakey, eval = TRUE, echo = FALSE, message = TRUE}
+dim (v); head (v, n = 5)
+```
+```{r vert-sample, eval = TRUE}
+pts <- sample (v$id, size = 1000)
+head (pts)
+```
+
+---
+
+# dodgr distances
+
+```{r dodgr-dists-help-fakey, echo = TRUE, eval = FALSE}
+?dodgr_dists
+```
+```{r dodgr-dists-help, echo = FALSE, message = TRUE}
+helpfile <- utils:::.getHelpFile (help ("dodgr_dists"))
+hs <- capture.output (tools:::Rd2txt(helpfile))
+#hs <- capture.output (tools:::prepare_Rd(helpfile))
+cat(hs, sep="\n")
+```
+
+---
+
+# dodgr distances
+
+Calculate cycling distances between random points.
+
+```{r dodgr-vertices3, eval = FALSE}
+v <- dodgr_vertices (net)
+dim (v); head (v)
+```
+```{r dodgr-vertices3-fakey, eval = TRUE, echo = FALSE, message = TRUE}
+dim (v); head (v, n = 5)
+```
+```{r vert-sample3, eval = TRUE, message = TRUE}
+pts <- sample (v$id, size = 1000)
+head (pts)
+```
+
+
+---
+
+# dodgr distances
+
+```{r dodgr-dists1, eval = FALSE}
+system.time (
+             d <- dodgr_dists (net, from = pts, to = pts) #<<
+             )
+```
+```{r dodgr-dists1-fakey, echo = FALSE, message = TRUE}
+message ("   user  system elapsed\n",
+" 43.847   0.013   6.042")
+```
+
+--
+
+- Those 1,000,000 distances could have been calculated with the google API
+- And that would cost `1e6 * 0.004 = $US4,000`
+- $US 4,000 for 6 seconds of calculation!
+- To date, `dodgr` provides one of the only .bold[free] ways to perform such
+  calcualtions, and is also entirely .bold[open source].
+
+---
+
+# dodgr distances
+
+```{r dodgr-dists1-copy, eval = FALSE}
+system.time (
+             d <- dodgr_dists (net, from = pts, to = pts)
+             )
+```
+```{r dodgr-dists1-copy-fakey, echo = FALSE, message = TRUE}
+message ("   user  system elapsed\n",
+" 43.847   0.013   6.042")
+```
+```{r dodgr-dists-result1, eval = FALSE}
+class (d); dim (d); range (d); range (d, na.rm = TRUE)
+```
+```{r dodgr-dists-result1-fakey, eval = TRUE, echo = FALSE, message = TRUE}
+message ("[1] matrix\n",    # explicit print coz otherwise output inserts
+         "[1] 1000 1000\n", # blank lines that no longer fit on screen
+         "[1] NA NA\n",
+         "[1]  0.00000 35.50599")
+```
+```{r dodgr-dists-result2, eval = FALSE}
+round (1000 ^ 2 * length (which (is.na (d))) / length (d))
+```
+```{r dodgr-dists-result2-fakey, eval = TRUE, echo = FALSE, message = TRUE}
+message ("[1] 32709")
+```
+
+---
+
+class: inverse, center, top
+
+.fonthuge[
+    ~~distances~~<br><br>
+    flows
+    ]
+
+---
+
+# flows
+
+If one person travels between each of our 1,000,000 pairs of points, how many
+travel on each bit of the network?
+
+```{r, eval = FALSE}
+d <- dodgr_dists (net, from = pts, to = pts)
+```
+```{r dodgr-flows, eval = FALSE}
+flow_mat <- matrix (1, nrow = 1000, ncol = 1000)
+system.time (
+    f <- dodgr_flows_aggregate (net, from = pts, to = pts,  #<<
+                                flows = flow_mat)           #<<
+)
+```
+```{r, eval = FALSE, echo = FALSE}
+saveRDS (f, file = "data/dodgr-flows-ms.Rds")
+```
+
+```{r dodgr-flows-fakey, eval = TRUE, echo = FALSE, message = TRUE}
+message ("   user  system elapsed\n",
+"145.186   1.107  20.016")
+```
+
+---
+
+# flows 
+
+```{r dodgr-flows-result-d, eval = TRUE, message = TRUE}
+head (net)
+```
+
+---
+
+# flows 
+
+```{r dodgr-flows-result, eval = TRUE, message = TRUE}
+head (f)
+```
+
+---
+
+# flows 
+
+```{r merge-directed-flows, eval = TRUE, message = TRUE}
+fm <- merge_directed_flows (f)
+```
+
+- Adds flows .bold[A] `r icon::fa_long_arrow_alt_right()` .bold[B] to .bold[B]
+  `r icon::fa_long_arrow_alt_right()` .bold[A]
+- Removes one of the two edges
+- Also removes all edges with zero flow
+
+--
+
+```{r merge-directed-flows-result, message = TRUE}
+dim (f); dim (fm)
+nrow (fm) / nrow (f)
+```
+
+
+---
+
+# flows
+
+```{r flowplot, out.height = "400px", out.width = "500px", echo = TRUE}
+library (ggplot2)
+ggplot (fm, aes (flow)) + geom_freqpoly ()
+```
+
+---
+class: center, inverse
+
+.fonthuge[
+mapdeck <br><br> time!
+]
+
+---
+
+# flows 
+
+```{r dodgr-flows-result2, eval = TRUE, message = TRUE}
+head (fm)
+```
+
+---
+
+# flows
+
+```{r ms-mapdeck, eval = FALSE}
+library (mapdeck)
+f$flow <- 20 * f$flow / max (f$flow)
+pal <- colorRampPalette (c ("lawngreen", "red"))
+loc <- apply (sf::st_coordinates (ms$osm_lines), 2, mean) [1:2]
+mapdeck (style = 'mapbox://styles/mapbox/dark-v9',
+         zoom = 12,
+         location = loc) %>%
+    add_line (data = fm,
+              layer_id = "ms-highways",
+              origin = c("from_lon", "from_lat"),
+              destination = c("to_lon", "to_lat"),
+              stroke_colour = "flow",
+              stroke_width = "flow",
+              palette = pal)
+```
+```{r ms-mapdeck-fakey, echo = FALSE}
+loc <-  c (7.619786, 51.952610)
+```
+
+---
+background-image: url(img/ms-random-flows.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+background-image: url(img/ms-promenade100.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+class: center, inverse
+
+.fontBIG[
+The Promenade<br>IS<br>cycling in Münster,<br>but there are no flows along most of
+it!
+]
+
+---
+
+# How to get people riding along the Promenade?
+
+- We first need to find the edges of our `dodgr net` which correspond to the
+Promenade.
+- Get OSM way IDs (making sure to exclude the "Kanalpromenade")
+
+```{r promenade-ids, eval = FALSE}
+index <- grep ("promenade", ms$osm_lines$name,
+               ignore.case = TRUE)
+index_kp <- grep ("kanal", ms$osm_lines$name,
+                  ignore.case = TRUE)
+index <- index [!index %in% index_kp]
+ids_prom <- ms$osm_lines$osm_id [index] %>%
+    as.character ()
+```
+
+---
+
+# How to get people riding along the Promenade?
+
+- Presume the Promenade "feels" 10% shorter than what it actually is
+
+```{r promenade-reweight, eval = FALSE}
+shorter <- 0.1
+g <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle")
+index <- which (g$way_id %in% ids_prom)
+g$d_weighted [index] <- g$d [index] * (1 - shorter) #<<
+f <- dodgr_flows_aggregate (g, from = pts, to = pts,
+                            flows = flowmat)
+```
+
+---
+
+# How to get people riding along the Promenade?
+
+
+```{r}
+head (net)
+```
+
+---
+
+# How to get people riding along the Promenade?
+
+- Presume the Promenade "feels" 10% shorter than what it actually is
+
+```{r promenade-reweight2, eval = FALSE}
+shorter <- 0.1
+g <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle")
+index <- which (g$way_id %in% ids_prom)
+g$d_weighted [index] <- g$d [index] * (1 - shorter)
+f <- dodgr_flows_aggregate (g, from = pts, to = pts,
+                            flows = flowmat)
+```
+
+---
+background-image: url(img/ms-promenade90.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+
+# How to get people riding along the Promenade?
+
+Presume the Promenade "feels" (0, 10, 20, & 30)% shorter than what it actually is
+
+```{r promenade-reweight3, eval = FALSE}
+g <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle")
+index <- which (g$way_id %in% ids)
+g$d_weighted [index] <- g$d [index] * (1 - shorter)
+f <- dodgr_flows_aggregate (g, from = pts, to = pts,
+                            flows = flowmat)
+```
+
+---
+background-image: url(img/ms-promenade100.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+background-image: url(img/ms-promenade90.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+background-image: url(img/ms-promenade80.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+background-image: url(img/ms-promenade70.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+class: center, top, inverse
+.fontBIG[
+The Promenade feels like it is 30% shorter than what it actually is
+]
+
+---
+class: center, top, inverse
+.fontBIG[
+Münsteraner_Innen are willing to ride 30% further to ride along the Promenade
+]
+
+---
+class: center, top, inverse
+.fontBIG[
+Important Lesson: Cultural specificities are important!
+]
+
+
+---
+class: center, top, inverse
+.fontBIG[
+Popquiz: <br><br>Where in Münster are cyclists most exposed to air pollution?
+]
+
+---
+background-image: url(img/ms-bike-flows.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+
+# Where is Münster are cyclists most exposed to air pollution?
+
+- Air pollution comes from automotive vehicles, so need to know where they
+  travel
+
+- Generate another flow layer
+
+--
+
+- Implement model to simulate dispersal to adjacent ways including bike paths
+
+
+---
+background-image: url(img/ms-car-flows.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+background-image: url(img/ms-car-flows-dispersed.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+background-image: url(img/ms-promenade70.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+
+# Where is Münster are cyclists most exposed to air pollution?
+
+- Air pollution comes from automotive vehicles, so need to know where they
+  travel
+
+- Generate another flow layer
+
+- Implement model to simulate dispersal to adjacent ways including bike paths
+
+--
+
+- Quantify exposure as cyclist flows times pollutant concentrations
+
+---
+background-image: url(img/ms-exposure.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+background-image: url(img/ms-car-flows-dispersed.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+background-image: url(img/ms-promenade70.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+---
+background-image: url(img/ms-exposure.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+class: center, middle, inverse
+
+--
+
+.fonthuge[THANK<br>YOU!]
+.box-bottom[May the flow be with you]
+
+---
+class: center, middle, inverse
+background-image: url(img/ms-exposure.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
+
+
+.left-column[
+`r icon::fa_github(size = 2, animate = "spin")` atfutures
+
+`r icon::fa_github(size = 2, animate = "spin")` mpadge
+
+`r icon::fa_github(size = 2, animate = "spin")` ropensci
+]
+
+.right-column[
+`r icon::fa_twitter(size = 2, animate = "spin")` bikesRdata
+
+`r icon::fa_envelope(size = 1)` .small[mark.padgham@email.com]<br><br>
+
+`r icon::ii_ios_world_outline(size = 5)` atfutures.github.io
+]
+
+
+.box-bottom[
+slides at <br>
+[https://github.com/mpadge/ms-user-meetup-nov2018](https://github.com/mpadge/ms-user-meetup-nov2018)
+]
+
