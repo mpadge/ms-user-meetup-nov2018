@@ -661,6 +661,21 @@ Question:<br><br> What kind of default plot method might <br>be useful?
 
 # osmdata
 
+- The fastest and easiest method in any language for extracting OSM data
+- Only software that allows OSM data to be extracted in 3 simple lines:
+
+```{r, eval = FALSE}
+ms <- opq ("münster de") %>%
+    add_osm_feature (key = "highway") %>%
+    osmdata_sf (quiet = FALSE)
+```
+
+- Extremely flexible; can extract any form of OSM data.
+
+---
+
+# osmdata
+
 For more information, see [the website](https://github.com/ropensci/osmdata)
 
 ---
