@@ -728,7 +728,7 @@ dim (net); head (net)
 
 ---
 
-# dodgr distances
+# dodgr 
 
 
 ```{r ms-components, eval = TRUE, message = TRUE}
