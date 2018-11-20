@@ -22,3 +22,9 @@ This means that many of the `leaflet` and `deck.gl` maps that may otherwise have
 just been generated as widgets have instead been pre-generated and manually
 saved as screenshots.  That's just the way things are at this present moment.
 Should change any day now ...
+
+## Deploy to github pages
+
+See the [`make
+deploy`](https://github.com/mpadge/ms-user-meetup-nov2018/blob/master/makefile)
+command for how that's done.
