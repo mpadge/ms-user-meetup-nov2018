@@ -18,7 +18,7 @@ output:
 ```{r load, include = FALSE, eval = TRUE}
 library(xaringanthemer)
 source ("myxaringantheme.R")
-source ("script.R")
+source ("data-script.R")
 promenade <- readRDS ("data/osm-promenade.Rds")
 ms48155 <- readRDS ("data/osm-ms-48155.Rds")
 net <- f <- readRDS ("data/dodgr-flows-ms.Rds")
@@ -327,7 +327,6 @@ opq ("48155 de") %>%
 ```
 
 - `opq` `r icon::fa_long_arrow_alt_right()` .bold[WHERE]
-- `opq` `r icon::fa_long_arrow_alt_right()` .bold[WHERE]
 - `add_osm_feature` `r icon::fa_long_arrow_alt_right()` .bold[WHAT]
 - `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[HOW]
 
@@ -491,7 +490,7 @@ How to visualise just the Promenade?
 library (osmdata)
 promenade <- opq ("münster de") %>%
     add_osm_feature (key = "highway") %>%
-    add_osm_feature (key = "name", value = "Promenade",
+    add_osm_feature (key = "name", value = "promenade",
                      value_exact = FALSE) %>%
     osmdata_sf ()
 library (mapview)
@@ -513,22 +512,6 @@ class: middle, inverse, center
 Digression:<br>Visualising OSM data
 ]
 
----
-
-# Visualising osmdata
-
-```{r prom-sf, message = TRUE}
-promenade
-```
-
----
-
-# Visualising osmdata
-
-```{r prom-sf-print}
-library (sf)
-promenade$osm_lines
-```
 ---
 
 
@@ -573,7 +556,7 @@ mapview (ms48155$osm_lines) %>%
 ```{r promenade-data4, eval = FALSE}
 promenade <- opq ("münster de") %>%
     add_osm_feature (key = "highway") %>%
-    add_osm_feature (key = "name", value = "Promenade",
+    add_osm_feature (key = "name", value = "promenade",
                      value_exact = FALSE) %>%
     osmdata_sf ()
 ```
@@ -639,6 +622,39 @@ background-position: 50% 50%
 
 # Visualising osmdata
 
+```{r, eval = FALSE}
+system.time (
+             mapview (ms48155$osm_lines)
+)
+```
+```{r, echo = FALSE, message = TRUE}
+res <- c (3.799, 0.074, 3.906)
+names (res) <- c ("user", "system", "elapsed")
+res
+```
+
+```{r, eval = FALSE}
+system.time (
+mapdeck (style = 'mapbox://styles/mapbox/dark-v9',
+         location = loc,
+         zoom = 12) %>%
+    add_path (data = ms48155$osm_lines,
+              layer_id = "ms",
+              stroke_width = 1,
+              stroke_colour = "#4444dd",
+              stroke_opacity = 80)
+)
+```
+```{r, echo = FALSE, message = TRUE}
+res <- c (0.222, 0.000, 0.237)
+names (res) <- c ("user", "system", "elapsed")
+res
+```
+
+---
+
+# Visualising osmdata
+
 One further alternative for static plots is the [`osmplotr`
 package](https://github.com/ropensci/osmplotr)
 
@@ -665,18 +681,19 @@ Question:<br><br> What kind of default plot method might <br>be useful?
 - Only software that allows OSM data to be extracted in 3 simple lines:
 
 ```{r, eval = FALSE}
-ms <- opq ("münster de") %>%
-    add_osm_feature (key = "highway") %>%
-    osmdata_sf (quiet = FALSE)
+ms <- opq ("münster de") %>%               # WHERE
+    add_osm_feature (key = "highway") %>%  # WHAT
+    osmdata_sf (quiet = FALSE)             # HOW
 ```
 
 - Extremely flexible; can extract any form of OSM data.
 
----
-
-# osmdata
-
-For more information, see [the website](https://github.com/ropensci/osmdata)
+```{r, eval = FALSE}
+ms <- opq ("münster de") %>%
+    add_osm_feature (key = "building") %>%
+    osmdata_sf (quiet = FALSE)
+```
+- For more information, see [the website](https://github.com/ropensci/osmdata)
 
 ---
 class: top, center, inverse
@@ -743,18 +760,6 @@ ms <- osm_poly2line (ms) # osmdata function
 
 Convert Münster OSM data to `dodgr` format
 
-```{r weight-streetnet-ms2, eval = FALSE, message = TRUE}
-ms <- osm_poly2line (ms) # osmdata function
-library (dodgr)
-net <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle") #<<
-```
-
----
-
-# dodgr
-
-Convert Münster OSM data to `dodgr` format
-
 ```{r weight-streetnet-ms3, eval = FALSE, message = TRUE}
 ms <- osm_poly2line (ms) # osmdata function
 library (dodgr)
@@ -775,24 +780,6 @@ dim (net); head (net)
 dim (net)
 head (table (net$component), 10)
 ```
-
----
-
-# dodgr distances
-
-Calculate cycling distances between random points.
-
-```{r dodgr-vertices1-fakey, eval = FALSE}
-v <- dodgr_vertices (net) #<<
-dim (v); head (v)
-```
-```{r dodgr-vertices1, eval = TRUE, echo = FALSE}
-v <- dodgr_vertices (net)
-dim (v); head (v, n = 5)
-```
-
-- `id` is the unique OSM is of each vertex<br>("node" in OSM terminology)
-- most `dodgr` functions work either with<br>coordinates or `id` values
 
 
 ---
@@ -845,6 +832,38 @@ pts <- sample (v$id, size = 1000)
 head (pts)
 ```
 
+---
+
+# dodgr distances
+
+```{r dodgr-dists1-copy, eval = FALSE}
+system.time (
+             d <- dodgr_dists (net, from = pts, to = pts) #<<
+             )
+```
+```{r dodgr-dists1-copy-fakey, echo = FALSE, message = TRUE}
+message ("   user  system elapsed\n",
+" 43.847   0.013   6.042")
+```
+
+--
+
+
+```{r dodgr-dists-result1, eval = FALSE}
+class (d); dim (d); range (d); range (d, na.rm = TRUE)
+```
+```{r dodgr-dists-result1-fakey, eval = TRUE, echo = FALSE, message = TRUE}
+message ("[1] matrix\n",    # explicit print coz otherwise output inserts
+         "[1] 1000 1000\n", # blank lines that no longer fit on screen
+         "[1] NA NA\n",
+         "[1] 0.00000 35.50599")
+```
+```{r dodgr-dists-result2, eval = FALSE}
+round (1000 ^ 2 * length (which (is.na (d))) / length (d))
+```
+```{r dodgr-dists-result2-fakey, eval = TRUE, echo = FALSE, message = TRUE}
+message ("[1] 32709")
+```
 
 ---
 
@@ -860,42 +879,18 @@ message ("   user  system elapsed\n",
 " 43.847   0.013   6.042")
 ```
 
---
-
 - Those 1,000,000 distances could have been calculated with the google API
 - And that would cost `1e6 * 0.004 = $US4,000`
 - $US 4,000 for 6 seconds of calculation!
 - To date, `dodgr` provides one of the only .bold[free] ways to perform such
-  calcualtions, and is also entirely .bold[open source].
+  calculations, and is also entirely .bold[open source].
 
 ---
-
-# dodgr distances
-
-```{r dodgr-dists1-copy, eval = FALSE}
-system.time (
-             d <- dodgr_dists (net, from = pts, to = pts)
-             )
-```
-```{r dodgr-dists1-copy-fakey, echo = FALSE, message = TRUE}
-message ("   user  system elapsed\n",
-" 43.847   0.013   6.042")
-```
-```{r dodgr-dists-result1, eval = FALSE}
-class (d); dim (d); range (d); range (d, na.rm = TRUE)
-```
-```{r dodgr-dists-result1-fakey, eval = TRUE, echo = FALSE, message = TRUE}
-message ("[1] matrix\n",    # explicit print coz otherwise output inserts
-         "[1] 1000 1000\n", # blank lines that no longer fit on screen
-         "[1] NA NA\n",
-         "[1]  0.00000 35.50599")
-```
-```{r dodgr-dists-result2, eval = FALSE}
-round (1000 ^ 2 * length (which (is.na (d))) / length (d))
-```
-```{r dodgr-dists-result2-fakey, eval = TRUE, echo = FALSE, message = TRUE}
-message ("[1] 32709")
-```
+class: left, top, inverse
+background-image: url(img/ms-promenade.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
 
 ---
 
@@ -968,6 +963,13 @@ dim (f); dim (fm)
 nrow (fm) / nrow (f)
 ```
 
+---
+
+# flows 
+
+```{r dodgr-flows-result2, eval = TRUE, message = TRUE}
+head (fm)
+```
 
 ---
 
@@ -982,17 +984,9 @@ ggplot (fm, aes (flow)) + geom_freqpoly ()
 class: center, inverse
 
 .fonthuge[
-mapdeck <br><br> time!
+mapdeck <br> time!<br>
+`r icon::fa_uber(animate = "spin")`
 ]
-
----
-
-# flows 
-
-```{r dodgr-flows-result2, eval = TRUE, message = TRUE}
-head (fm)
-```
-
 ---
 
 # flows
@@ -1222,8 +1216,6 @@ class: center, middle, inverse
 - Generate another flow layer
 
 - Implement model to simulate dispersal to adjacent ways including bike paths
-
---
 
 - Quantify exposure as cyclist flows times pollutant concentrations
 

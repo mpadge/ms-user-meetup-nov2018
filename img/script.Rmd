@@ -29,7 +29,6 @@ library (osmdata)
 library (dodgr)
 library (mapdeck)
 loc <- as.numeric (apply (sf::st_coordinates (ms48155$osm_lines), 2, mean) [1:2])
-tok <- Sys.getenv ("MAPBOX_TOKEN")
 mapdeck (style = 'mapbox://styles/mapbox/dark-v9',
          location = loc,
          zoom = 12) %>%
@@ -39,6 +38,26 @@ mapdeck (style = 'mapbox://styles/mapbox/dark-v9',
               stroke_colour = "#4444dd",
               stroke_opacity = 80)
 ```
+
+### timing comparison mapview vs mapdeck
+
+```{r}
+library (mapview)
+library (mapdeck)
+system.time (mapview (ms48155$osm_lines))
+loc <- as.numeric (apply (sf::st_coordinates (ms48155$osm_lines), 2, mean) [1:2])
+system.time (
+mapdeck (style = 'mapbox://styles/mapbox/dark-v9',
+         location = loc,
+         zoom = 12) %>%
+    add_path (data = ms48155$osm_lines,
+              layer_id = "ms",
+              stroke_width = 1,
+              stroke_colour = "#4444dd",
+              stroke_opacity = 80)
+)
+```
+
 
 `img/mspromenade-mapview.png`:
 ```{r mapdeck2, eval = FALSE, echo = FALSE}
@@ -277,7 +296,7 @@ message ("done\ndispersing ... ", appendLF = FALSE)
 fvd <- disperse_flows (fv, 20) %>%
     merge_directed_flows ()
 fv <- merge_directed_flows (fv)
-mesage ("done")
+message ("done")
 ```
 The two maps of vehicular flows:
 ```{r}
@@ -293,6 +312,7 @@ indx2 <- match (fvd$edge_id [indx1], f$edge_id)
 f$flow <- f$flow / max (f$flow)
 fvd$flow <- fvd$flow / max (fvd$flow)
 f$flow <- f$flow * fvd$flow [indx1] [indx2]
+saveRDS (f, file = "dodgr-exposure-ms.Rds")
 plot1map (f)
 ```
 
