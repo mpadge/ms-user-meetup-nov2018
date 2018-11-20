@@ -347,56 +347,11 @@ opq ("48155 de") %>%
 
 # The osmdata package - Spatial Formats
 
-```{r osmdata-sp, eval = FALSE}
-library (osmdata)
-opq ("48155 de") %>%
-    add_osm_feature (key = "highway") %>%
-    osmdata_sp ()
-```
-
-- `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[Simple Features]
-- `osmdata_sp` `r icon::fa_long_arrow_alt_right()` .bold[R Spatial]
-
----
-
-# The osmdata package - Spatial Formats
-
-```{r osmdata-sc, eval = FALSE}
-library (osmdata)
-opq ("48155 de") %>%
-    add_osm_feature (key = "highway") %>%
-    osmdata_sc ()
-```
-
-- `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[Simple Features]
-- `osmdata_sp` `r icon::fa_long_arrow_alt_right()` .bold[R Spatial]
-- `osmdata_sc` `r icon::fa_long_arrow_alt_right()` .bold[Silicate (Simplicial Complex)]
-
----
-
-# The osmdata package - Spatial Formats
-
-```{r osmdata-xml, eval = FALSE}
-library (osmdata)
-opq ("48155 de") %>%
-    add_osm_feature (key = "highway") %>%
-    osmdata_xml (file = "ms48155.osm")
-```
-
-- `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[Simple Features]
-- `osmdata_sp` `r icon::fa_long_arrow_alt_right()` .bold[R Spatial]
-- `osmdata_sc` `r icon::fa_long_arrow_alt_right()` .bold[Silicate (Simplicial Complex)]
-- `osmdata_xml` `r icon::fa_long_arrow_alt_right()` .bold[XML / OSM]
-
----
-
-# The osmdata package - Spatial Formats
-
 ```{r osmdata-pbf, eval = FALSE}
 library (osmdata)
 opq ("48155 de") %>%
     add_osm_feature (key = "highway") %>%
-    osmdata_pbf (file = "ms48155.pbf")
+    osmdata_sf (file = "ms48155.pbf")
 ```
 
 - `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[Simple Features]
@@ -793,6 +748,7 @@ v <- dodgr_vertices (net)
 dim (v); head (v)
 ```
 ```{r dodgr-vertices2-fakey, eval = TRUE, echo = FALSE, message = TRUE}
+v <- dodgr_vertices (net)
 dim (v); head (v, n = 5)
 ```
 ```{r vert-sample, eval = TRUE}
@@ -1155,6 +1111,12 @@ Münsteraner_Innen are willing to ride 30% further to ride along the Promenade
 class: center, top, inverse
 .fontBIG[
 Important Lesson: Cultural specificities are important!
+]
+
+--
+
+.fontBIG[
+And can be incorporated!
 ]
 
 

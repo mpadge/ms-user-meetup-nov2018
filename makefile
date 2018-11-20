@@ -9,4 +9,4 @@ open: $(LFILE).html
 	xdg-open $(LFILE).html &
 
 clean:
-	rm -rf *.html *.png README_cache 
+	rm -rf *.html xaringan-themer.css *_cache *_files

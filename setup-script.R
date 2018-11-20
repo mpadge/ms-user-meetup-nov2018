@@ -26,5 +26,5 @@ plot1map <- function (f)
               palette = pal)
 }
 
-plot1map ("data/dodgr-flows-ms70.Rds")
+plot1map ("data/dodgr-flows-ms.Rds")
 plot1map ("data/dodgr-exposure-ms.Rds")
