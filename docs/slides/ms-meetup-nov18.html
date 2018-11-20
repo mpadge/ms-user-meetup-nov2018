@@ -228,8 +228,6 @@ background-position: 50% 50%
 background-color: #000000
 
 ---
-background-image: url(img/fortune-beach.png)
----
 class: center, middle, inverse
 background-image: url(img/anju-google2.png)
 background-size: contain 
@@ -303,7 +301,7 @@ opq ("48155 de")
 
 ```
 ## $bbox
-## [1] "51.9529280425,7.6641567914585,51.9530280425,7.6642567914585"
+## [1] "51.9163722,7.632622,51.9906058,7.7231164"
 ## 
 ## $prefix
 ## [1] "[out:xml][timeout:25];\n(\n"
@@ -331,7 +329,7 @@ opq ("48155 de") %&gt;%
 
 ```
 ## $bbox
-## [1] "51.9529280425,7.6641567914585,51.9530280425,7.6642567914585"
+## [1] "51.9163722,7.632622,51.9906058,7.7231164"
 ## 
 ## $prefix
 ## [1] "[out:xml][timeout:25];\n(\n"
@@ -384,7 +382,6 @@ opq ("48155 de") %&gt;%
 ```
 
 - `opq` <i class="fas  fa-long-arrow-alt-right "></i> .bold[WHERE]
-- `opq` <i class="fas  fa-long-arrow-alt-right "></i> .bold[WHERE]
 - `add_osm_feature` <i class="fas  fa-long-arrow-alt-right "></i> .bold[WHAT]
 - `osmdata_sf` <i class="fas  fa-long-arrow-alt-right "></i> .bold[HOW]
 
@@ -411,55 +408,7 @@ opq ("48155 de") %&gt;%
 library (osmdata)
 opq ("48155 de") %&gt;%
     add_osm_feature (key = "highway") %&gt;%
-    osmdata_sp ()
-```
-
-- `osmdata_sf` <i class="fas  fa-long-arrow-alt-right "></i> .bold[Simple Features]
-- `osmdata_sp` <i class="fas  fa-long-arrow-alt-right "></i> .bold[R Spatial]
-
----
-
-# The osmdata package - Spatial Formats
-
-
-```r
-library (osmdata)
-opq ("48155 de") %&gt;%
-    add_osm_feature (key = "highway") %&gt;%
-    osmdata_sc ()
-```
-
-- `osmdata_sf` <i class="fas  fa-long-arrow-alt-right "></i> .bold[Simple Features]
-- `osmdata_sp` <i class="fas  fa-long-arrow-alt-right "></i> .bold[R Spatial]
-- `osmdata_sc` <i class="fas  fa-long-arrow-alt-right "></i> .bold[Silicate (Simplicial Complex)]
-
----
-
-# The osmdata package - Spatial Formats
-
-
-```r
-library (osmdata)
-opq ("48155 de") %&gt;%
-    add_osm_feature (key = "highway") %&gt;%
-    osmdata_xml (file = "ms48155.osm")
-```
-
-- `osmdata_sf` <i class="fas  fa-long-arrow-alt-right "></i> .bold[Simple Features]
-- `osmdata_sp` <i class="fas  fa-long-arrow-alt-right "></i> .bold[R Spatial]
-- `osmdata_sc` <i class="fas  fa-long-arrow-alt-right "></i> .bold[Silicate (Simplicial Complex)]
-- `osmdata_xml` <i class="fas  fa-long-arrow-alt-right "></i> .bold[XML / OSM]
-
----
-
-# The osmdata package - Spatial Formats
-
-
-```r
-library (osmdata)
-opq ("48155 de") %&gt;%
-    add_osm_feature (key = "highway") %&gt;%
-    osmdata_pbf (file = "ms48155.pbf")
+    osmdata_sf (file = "ms48155.pbf")
 ```
 
 - `osmdata_sf` <i class="fas  fa-long-arrow-alt-right "></i> .bold[Simple Features]
@@ -541,6 +490,8 @@ library (osmdata)
 ```
 
 ---
+background-image: url(img/fortune-beach.png)
+---
 
 # The osmdata package - Visualisation
 
@@ -558,8 +509,6 @@ promenade &lt;- opq ("münster de") %&gt;%
 
 
 ---
-background-image: url(img/fortune-beach.png)
----
 
 # The osmdata package - Visualisation
 
@@ -570,7 +519,7 @@ How to visualise just the Promenade?
 library (osmdata)
 promenade &lt;- opq ("münster de") %&gt;%
     add_osm_feature (key = "highway") %&gt;%
-    add_osm_feature (key = "name", value = "Promenade",
+    add_osm_feature (key = "name", value = "promenade",
                      value_exact = FALSE) %&gt;%
     osmdata_sf ()
 library (mapview)
@@ -592,90 +541,6 @@ class: middle, inverse, center
 Digression:&lt;br&gt;Visualising OSM data
 ]
 
----
-
-# Visualising osmdata
-
-
-```r
-promenade
-```
-
-```
-## Object of class 'osmdata' with:
-##                  $bbox : 51.8401448,7.4737853,52.0600251,7.7743634
-##         $overpass_call : The call submitted to the overpass API
-##                  $meta : metadata including timestamp and version numbers
-##            $osm_points : 'sf' Simple Features Collection with 190 points
-##             $osm_lines : 'sf' Simple Features Collection with 30 linestrings
-##          $osm_polygons : 'sf' Simple Features Collection with 0 polygons
-##        $osm_multilines : 'sf' Simple Features Collection with 0 multilinestrings
-##     $osm_multipolygons : 'sf' Simple Features Collection with 0 multipolygons
-```
-
----
-
-# Visualising osmdata
-
-
-```r
-library (sf)
-promenade$osm_lines
-```
-
-```
-## Simple feature collection with 30 features and 23 fields
-## geometry type:  LINESTRING
-## dimension:      XY
-## bbox:           xmin: 7.614493 ymin: 51.95647 xmax: 7.634581 ymax: 51.96796
-## epsg (SRID):    4326
-## proj4string:    +proj=longlat +datum=WGS84 +no_defs
-## First 10 features:
-##            osm_id      name    bicycle bridge cutting embankment
-## 5189969   5189969 Promenade       &lt;NA&gt;   &lt;NA&gt;     yes       &lt;NA&gt;
-## 5293594   5293594 Promenade       &lt;NA&gt;   &lt;NA&gt;    &lt;NA&gt;       &lt;NA&gt;
-## 5293614   5293614 Promenade       &lt;NA&gt;   &lt;NA&gt;    &lt;NA&gt;       &lt;NA&gt;
-## 5608078   5608078 Promenade       &lt;NA&gt;   &lt;NA&gt;    &lt;NA&gt;       &lt;NA&gt;
-## 5736764   5736764 Promenade       &lt;NA&gt;   &lt;NA&gt;    &lt;NA&gt;       &lt;NA&gt;
-## 10191779 10191779 Promenade        yes   &lt;NA&gt;    &lt;NA&gt;       &lt;NA&gt;
-## 17438343 17438343 Promenade designated   &lt;NA&gt;    &lt;NA&gt;        yes
-## 25742358 25742358 Promenade       &lt;NA&gt;   &lt;NA&gt;     yes       &lt;NA&gt;
-## 34428181 34428181 Promenade       &lt;NA&gt;   &lt;NA&gt;    &lt;NA&gt;       &lt;NA&gt;
-## 41849998 41849998 Promenade       &lt;NA&gt;   &lt;NA&gt;    &lt;NA&gt;       &lt;NA&gt;
-##                foot  highway layer  lit maxweight motor_vehicle motorcar
-## 5189969        &lt;NA&gt;  service  &lt;NA&gt; &lt;NA&gt;      &lt;NA&gt;            no     &lt;NA&gt;
-## 5293594        &lt;NA&gt;  service  &lt;NA&gt; &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;       no
-## 5293614        &lt;NA&gt;  service  &lt;NA&gt; &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;       no
-## 5608078          no cycleway  &lt;NA&gt; &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;     &lt;NA&gt;
-## 5736764        &lt;NA&gt;  service  &lt;NA&gt; &lt;NA&gt;      &lt;NA&gt;            no     &lt;NA&gt;
-## 10191779       &lt;NA&gt;  service  &lt;NA&gt; &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;     &lt;NA&gt;
-## 17438343 designated cycleway  &lt;NA&gt; &lt;NA&gt;      &lt;NA&gt;          &lt;NA&gt;     &lt;NA&gt;
-## 25742358       &lt;NA&gt;  service  &lt;NA&gt; &lt;NA&gt;      &lt;NA&gt;            no     &lt;NA&gt;
-## 34428181       &lt;NA&gt;  service  &lt;NA&gt; &lt;NA&gt;      &lt;NA&gt;            no     &lt;NA&gt;
-## 41849998       &lt;NA&gt;  service  &lt;NA&gt;  yes      &lt;NA&gt;            no     &lt;NA&gt;
-##          motorcycle note note_2 oneway  psv segregated smoothness
-## 5189969        &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
-## 5293594          no &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   no       &lt;NA&gt;       &lt;NA&gt;
-## 5293614          no &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   no       &lt;NA&gt;       &lt;NA&gt;
-## 5608078        &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
-## 5736764        &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;   no       &lt;NA&gt;       &lt;NA&gt;
-## 10191779       &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
-## 17438343       &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;    yes &lt;NA&gt;         no       &lt;NA&gt;
-## 25742358       &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
-## 34428181       &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
-## 41849998       &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;       &lt;NA&gt;       good
-##                surface vehicle width                       geometry
-## 5189969        asphalt    &lt;NA&gt;  &lt;NA&gt; LINESTRING (7.634581 51.963...
-## 5293594           &lt;NA&gt;    &lt;NA&gt;  &lt;NA&gt; LINESTRING (7.63363 51.9654...
-## 5293614           &lt;NA&gt;    &lt;NA&gt;  &lt;NA&gt; LINESTRING (7.634581 51.963...
-## 5608078  paving_stones    &lt;NA&gt;  &lt;NA&gt; LINESTRING (7.619777 51.957...
-## 5736764           &lt;NA&gt;    &lt;NA&gt;  &lt;NA&gt; LINESTRING (7.616059 51.961...
-## 10191779          &lt;NA&gt;      no  &lt;NA&gt; LINESTRING (7.622372 51.957...
-## 17438343          &lt;NA&gt;    &lt;NA&gt;  &lt;NA&gt; LINESTRING (7.614493 51.961...
-## 25742358       asphalt    &lt;NA&gt;  &lt;NA&gt; LINESTRING (7.634457 51.961...
-## 34428181          &lt;NA&gt;    &lt;NA&gt;  &lt;NA&gt; LINESTRING (7.616082 51.962...
-## 41849998       asphalt    &lt;NA&gt;  &lt;NA&gt; LINESTRING (7.633513 51.960...
-```
 ---
 
 
@@ -723,7 +588,7 @@ mapview (ms48155$osm_lines) %&gt;%
 ```r
 promenade &lt;- opq ("münster de") %&gt;%
     add_osm_feature (key = "highway") %&gt;%
-    add_osm_feature (key = "name", value = "Promenade",
+    add_osm_feature (key = "name", value = "promenade",
                      value_exact = FALSE) %&gt;%
     osmdata_sf ()
 ```
@@ -796,6 +661,41 @@ background-position: 50% 50%
 
 # Visualising osmdata
 
+
+```r
+system.time (
+             mapview (ms48155$osm_lines)
+)
+```
+
+```
+##    user  system elapsed 
+##   3.799   0.074   3.906
+```
+
+
+```r
+system.time (
+mapdeck (style = 'mapbox://styles/mapbox/dark-v9',
+         location = loc,
+         zoom = 12) %&gt;%
+    add_path (data = ms48155$osm_lines,
+              layer_id = "ms",
+              stroke_width = 1,
+              stroke_colour = "#4444dd",
+              stroke_opacity = 80)
+)
+```
+
+```
+##    user  system elapsed 
+##   0.222   0.000   0.237
+```
+
+---
+
+# Visualising osmdata
+
 One further alternative for static plots is the [`osmplotr`
 package](https://github.com/ropensci/osmplotr)
 
@@ -823,18 +723,20 @@ Question:&lt;br&gt;&lt;br&gt; What kind of default plot method might &lt;br&gt;b
 
 
 ```r
-ms &lt;- opq ("münster de") %&gt;%
-    add_osm_feature (key = "highway") %&gt;%
-    osmdata_sf (quiet = FALSE)
+ms &lt;- opq ("münster de") %&gt;%               # WHERE
+    add_osm_feature (key = "highway") %&gt;%  # WHAT
+    osmdata_sf (quiet = FALSE)             # HOW
 ```
 
 - Extremely flexible; can extract any form of OSM data.
 
----
 
-# osmdata
-
-For more information, see [the website](https://github.com/ropensci/osmdata)
+```r
+ms &lt;- opq ("münster de") %&gt;%
+    add_osm_feature (key = "building") %&gt;%
+    osmdata_sf (quiet = FALSE)
+```
+- For more information, see [the website](https://github.com/ropensci/osmdata)
 
 ---
 class: top, center, inverse
@@ -906,19 +808,6 @@ Convert Münster OSM data to `dodgr` format
 ms &lt;- osm_poly2line (ms) # osmdata function
 library (dodgr)
 *net &lt;- weight_streetnet (ms$osm_lines, wt_profile = "bicycle")
-```
-
----
-
-# dodgr
-
-Convert Münster OSM data to `dodgr` format
-
-
-```r
-ms &lt;- osm_poly2line (ms) # osmdata function
-library (dodgr)
-*net &lt;- weight_streetnet (ms$osm_lines, wt_profile = "bicycle")
 dim (net); head (net)
 ```
 
@@ -967,34 +856,6 @@ head (table (net$component), 10)
 ## 313981    398    220    220    134    130    120    106    102    100
 ```
 
----
-
-# dodgr distances
-
-Calculate cycling distances between random points.
-
-
-```r
-*v &lt;- dodgr_vertices (net)
-dim (v); head (v)
-```
-
-```
-## [1] 152545      5
-```
-
-```
-##           id        x        y component n
-## 1  277727445 7.601811 51.93496         1 0
-## 2  471016556 7.601935 51.93507         1 1
-## 3  180445033 7.624554 51.95561         1 2
-## 4 1396624726 7.624838 51.95562         1 3
-## 6 4188292608 7.624961 51.95563         1 4
-```
-
-- `id` is the unique OSM is of each vertex&lt;br&gt;("node" in OSM terminology)
-- most `dodgr` functions work either with&lt;br&gt;coordinates or `id` values
-
 
 ---
 
@@ -1027,8 +888,8 @@ head (pts)
 ```
 
 ```
-## [1] "969406209"  "5140170463" "4332992173" "2611356257" "366656572" 
-## [6] "777034507"
+## [1] "249810677"  "269445672"  "417658184"  "5360938125" "1539416607"
+## [6] "5039874482"
 ```
 
 ---
@@ -1197,10 +1058,9 @@ head (pts)
 ```
 
 ```
-## [1] "244532003"  "3074192383" "3369326477" "246504876"  "1607562757"
-## [6] "3678050697"
+## [1] "2663741766" "256020961"  "253078551"  "1359975745" "5617656611"
+## [6] "437608641"
 ```
-
 
 ---
 
@@ -1220,27 +1080,7 @@ system.time (
 
 --
 
-- Those 1,000,000 distances could have been calculated with the google API
-- And that would cost `1e6 * 0.004 = $US4,000`
-- $US 4,000 for 6 seconds of calculation!
-- To date, `dodgr` provides one of the only .bold[free] ways to perform such
-  calcualtions, and is also entirely .bold[open source].
 
----
-
-# dodgr distances
-
-
-```r
-system.time (
-             d &lt;- dodgr_dists (net, from = pts, to = pts)
-             )
-```
-
-```
-##    user  system elapsed
-##  43.847   0.013   6.042
-```
 
 ```r
 class (d); dim (d); range (d); range (d, na.rm = TRUE)
@@ -1250,7 +1090,7 @@ class (d); dim (d); range (d); range (d, na.rm = TRUE)
 ## [1] matrix
 ## [1] 1000 1000
 ## [1] NA NA
-## [1]  0.00000 35.50599
+## [1] 0.00000 35.50599
 ```
 
 ```r
@@ -1260,6 +1100,35 @@ round (1000 ^ 2 * length (which (is.na (d))) / length (d))
 ```
 ## [1] 32709
 ```
+
+---
+
+# dodgr distances
+
+
+```r
+system.time (
+*            d &lt;- dodgr_dists (net, from = pts, to = pts)
+             )
+```
+
+```
+##    user  system elapsed
+##  43.847   0.013   6.042
+```
+
+- Those 1,000,000 distances could have been calculated with the google API
+- And that would cost `1e6 * 0.004 = $US4,000`
+- $US 4,000 for 6 seconds of calculation!
+- To date, `dodgr` provides one of the only .bold[free] ways to perform such
+  calculations, and is also entirely .bold[open source].
+
+---
+class: left, top, inverse
+background-image: url(img/ms-promenade.png)
+background-size: contain 
+background-position: 50% 50%
+background-color: #000000
 
 ---
 
@@ -1386,26 +1255,6 @@ nrow (fm) / nrow (f)
 ## [1] 0.2310742
 ```
 
-
----
-
-# flows
-
-
-```r
-library (ggplot2)
-ggplot (fm, aes (flow)) + geom_freqpoly ()
-```
-
-&lt;img src="ms-meetup-nov18_files/figure-html/flowplot-1.png" width="500px" height="400px" /&gt;
-
----
-class: center, inverse
-
-.fonthuge[
-mapdeck &lt;br&gt;&lt;br&gt; time!
-]
-
 ---
 
 # flows 
@@ -1432,6 +1281,25 @@ head (fm)
 ## 21 51.95612 0.004137829 0.005911184 primary 4064463         1   91
 ```
 
+---
+
+# flows
+
+
+```r
+library (ggplot2)
+ggplot (fm, aes (flow)) + geom_freqpoly ()
+```
+
+&lt;img src="ms-meetup-nov18_files/figure-html/flowplot-1.png" width="500px" height="400px" /&gt;
+
+---
+class: center, inverse
+
+.fonthuge[
+mapdeck &lt;br&gt; time!&lt;br&gt;
+<i class="fab  fa-uber fa-spin "></i>
+]
 ---
 
 # flows
@@ -1623,6 +1491,12 @@ class: center, top, inverse
 Important Lesson: Cultural specificities are important!
 ]
 
+--
+
+.fontBIG[
+And can be incorporated!
+]
+
 
 ---
 class: center, top, inverse
@@ -1673,6 +1547,8 @@ background-color: #000000
 class: center, middle, inverse
 
 ---
+background-image: url(img/fortune-beach.png)
+---
 
 # Where is Münster are cyclists most exposed to air pollution?
 
@@ -1682,8 +1558,6 @@ class: center, middle, inverse
 - Generate another flow layer
 
 - Implement model to simulate dispersal to adjacent ways including bike paths
-
---
 
 - Quantify exposure as cyclist flows times pollutant concentrations
 
