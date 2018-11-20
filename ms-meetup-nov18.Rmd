@@ -347,11 +347,11 @@ opq ("48155 de") %>%
 
 # The osmdata package - Spatial Formats
 
-```{r osmdata-pbf, eval = FALSE}
+```{r osmdata-all, eval = FALSE}
 library (osmdata)
 opq ("48155 de") %>%
     add_osm_feature (key = "highway") %>%
-    osmdata_sf (file = "ms48155.pbf")
+    osmdata_sf ()
 ```
 
 - `osmdata_sf` `r icon::fa_long_arrow_alt_right()` .bold[Simple Features]

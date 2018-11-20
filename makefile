@@ -22,7 +22,7 @@ deploy:
 	git add docs/slides/img/.; \
 	git add docs/slides/ms-meetup-nov18_files/.; \
 	git add docs/slides/ms-meetup-nov18_cache/.; \
-	git add docs/slides/ms-meetup-nove18.html
+	git add docs/slides/ms-meetup-nov18.html
 
 clean:
 	rm -rf *.html xaringan-themer.css *_cache *_files

@@ -221,6 +221,8 @@ background-position: 50% 50%
 background-color: #000000
 
 ---
+background-image: url(img/fortune-beach.png)
+---
 class: center, middle, inverse
 background-image: url(img/anju-google.png)
 background-size: contain 
@@ -370,6 +372,8 @@ opq ("48155 de") %&gt;%
 
 
 ---
+background-image: url(img/fortune-beach.png)
+---
 
 # The osmdata package
 
@@ -408,7 +412,7 @@ opq ("48155 de") %&gt;%
 library (osmdata)
 opq ("48155 de") %&gt;%
     add_osm_feature (key = "highway") %&gt;%
-    osmdata_sf (file = "ms48155.pbf")
+    osmdata_sf ()
 ```
 
 - `osmdata_sf` <i class="fas  fa-long-arrow-alt-right "></i> .bold[Simple Features]
@@ -489,8 +493,6 @@ library (osmdata)
     osmdata_sf ()
 ```
 
----
-background-image: url(img/fortune-beach.png)
 ---
 
 # The osmdata package - Visualisation
@@ -888,8 +890,8 @@ head (pts)
 ```
 
 ```
-## [1] "249810677"  "269445672"  "417658184"  "5360938125" "1539416607"
-## [6] "5039874482"
+## [1] "3413096710" "266200230"  "2504849044" "3648060041" "246552047" 
+## [6] "5551321112"
 ```
 
 ---
@@ -1058,8 +1060,8 @@ head (pts)
 ```
 
 ```
-## [1] "2663741766" "256020961"  "253078551"  "1359975745" "5617656611"
-## [6] "437608641"
+## [1] "5489613885" "5237059378" "525970779"  "1607562912" "5390795743"
+## [6] "293247289"
 ```
 
 ---
@@ -1546,8 +1548,6 @@ background-position: 50% 50%
 background-color: #000000
 class: center, middle, inverse
 
----
-background-image: url(img/fortune-beach.png)
 ---
 
 # Where is Münster are cyclists most exposed to air pollution?
