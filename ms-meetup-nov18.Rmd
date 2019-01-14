@@ -429,7 +429,7 @@ How to visualise just the Promenade?
 library (osmdata)
 promenade <- opq ("münster de") %>%
     add_osm_feature (key = "highway") %>%
-    add_osm_feature (key = "name", value = "promenade", #<<
+    add_osm_feature (key = "name", value = "Promenade", #<<
                      value_exact = FALSE) %>%           #<<
     osmdata_sf ()
 ```
@@ -445,7 +445,7 @@ How to visualise just the Promenade?
 library (osmdata)
 promenade <- opq ("münster de") %>%
     add_osm_feature (key = "highway") %>%
-    add_osm_feature (key = "name", value = "promenade",
+    add_osm_feature (key = "name", value = "Promenade",
                      value_exact = FALSE) %>%
     osmdata_sf ()
 library (mapview)
