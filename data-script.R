@@ -43,7 +43,11 @@ if (!(file.exists ("data/dodgr-flows-ms.Rds") &
     index <- grep ("promenade", ms$osm_lines$name, ignore.case = TRUE)
     kp <- grep ("kanal", ms$osm_lines$name, ignore.case = TRUE)
     index <- index [!index %in% kp]
+    # this should work, too, and it's a bit shorter
+    # (note the capital 'P' and 'ignore.case = FALSE')
+    # index <- grep ("Promenade", ms$osm_lines$name, ignore.case = FALSE)
     ids <- ms$osm_lines$osm_id [index] %>% as.character ()
+    g <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle")
     index <- which (g$way_id %in% ids)
 
     g0 <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle")
@@ -78,7 +82,7 @@ if (!(file.exists ("data/dodgr-flows-ms.Rds") &
 
     if (!file.exists ("data/dodgr-flows-ms70.Rds"))
     {
-        message ("Aggregating flows with promenade = 80%")
+        message ("Aggregating flows with promenade = 70%")
         g <- g0
         g$d_weighted [index] <- g$d [index] * 0.7
         f <- dodgr_flows_aggregate (g, from = pts, to = pts, flows = flowmat)

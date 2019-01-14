@@ -429,7 +429,7 @@ How to visualise just the Promenade?
 library (osmdata)
 promenade <- opq ("münster de") %>%
     add_osm_feature (key = "highway") %>%
-    add_osm_feature (key = "name", value = "promenade", #<<
+    add_osm_feature (key = "name", value = "Promenade", #<<
                      value_exact = FALSE) %>%           #<<
     osmdata_sf ()
 ```
@@ -445,7 +445,7 @@ How to visualise just the Promenade?
 library (osmdata)
 promenade <- opq ("münster de") %>%
     add_osm_feature (key = "highway") %>%
-    add_osm_feature (key = "name", value = "promenade",
+    add_osm_feature (key = "name", value = "Promenade",
                      value_exact = FALSE) %>%
     osmdata_sf ()
 library (mapview)
@@ -511,7 +511,7 @@ mapview (ms48155$osm_lines) %>%
 ```{r promenade-data4, eval = FALSE}
 promenade <- opq ("münster de") %>%
     add_osm_feature (key = "highway") %>%
-    add_osm_feature (key = "name", value = "promenade",
+    add_osm_feature (key = "name", value = "Promenade",
                      value_exact = FALSE) %>%
     osmdata_sf ()
 ```
@@ -949,12 +949,12 @@ mapdeck <br> time!<br>
 
 ```{r ms-mapdeck, eval = FALSE}
 library (mapdeck)
-f$flow <- 20 * f$flow / max (f$flow)
+fm$flow <- 20 * fm$flow / max (fm$flow)
 pal <- colorRampPalette (c ("lawngreen", "red"))
 loc <- apply (sf::st_coordinates (ms$osm_lines), 2, mean) [1:2]
 mapdeck (style = 'mapbox://styles/mapbox/dark-v9',
          zoom = 12,
-         location = loc) %>%
+         location = as.numeric(loc)) %>%
     add_line (data = fm,
               layer_id = "ms-highways",
               origin = c("from_lon", "from_lat"),
@@ -1018,8 +1018,9 @@ shorter <- 0.1
 g <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle")
 index <- which (g$way_id %in% ids_prom)
 g$d_weighted [index] <- g$d [index] * (1 - shorter) #<<
+flow_mat <- matrix (1, nrow = 1000, ncol = 1000)
 f <- dodgr_flows_aggregate (g, from = pts, to = pts,
-                            flows = flowmat)
+                            flows = flow_mat)
 ```
 
 ---
@@ -1042,8 +1043,9 @@ shorter <- 0.1
 g <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle")
 index <- which (g$way_id %in% ids_prom)
 g$d_weighted [index] <- g$d [index] * (1 - shorter)
+flow_mat <- matrix (1, nrow = 1000, ncol = 1000)
 f <- dodgr_flows_aggregate (g, from = pts, to = pts,
-                            flows = flowmat)
+                            flows = flow_mat)
 ```
 
 ---
@@ -1135,7 +1137,7 @@ class: center, middle, inverse
 
 ---
 
-# Where is Münster are cyclists most exposed to air pollution?
+# Where in Münster are cyclists most exposed to air pollution?
 
 - Air pollution comes from automotive vehicles, so need to know where they
   travel
