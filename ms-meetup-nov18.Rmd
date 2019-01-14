@@ -951,10 +951,10 @@ mapdeck <br> time!<br>
 library (mapdeck)
 fm$flow <- 20 * fm$flow / max (fm$flow)
 pal <- colorRampPalette (c ("lawngreen", "red"))
-loc <- as.numeric(apply (sf::st_coordinates (ms$osm_lines), 2, mean)) [1:2]
+loc <- apply (sf::st_coordinates (ms$osm_lines), 2, mean) [1:2]
 mapdeck (style = 'mapbox://styles/mapbox/dark-v9',
          zoom = 12,
-         location = loc) %>%
+         location = as.numeric(loc)) %>%
     add_line (data = fm,
               layer_id = "ms-highways",
               origin = c("from_lon", "from_lat"),
@@ -1018,8 +1018,9 @@ shorter <- 0.1
 g <- weight_streetnet (ms$osm_lines, wt_profile = "bicycle")
 index <- which (g$way_id %in% ids_prom)
 g$d_weighted [index] <- g$d [index] * (1 - shorter) #<<
+flow_mat <- matrix (1, nrow = 1000, ncol = 1000)
 f <- dodgr_flows_aggregate (g, from = pts, to = pts,
-                            flows = flowmat)
+                            flows = flow_mat)
 ```
 
 ---
